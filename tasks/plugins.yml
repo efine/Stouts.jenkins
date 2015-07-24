@@ -5,11 +5,15 @@
 - name: jenkins-plugins | Update Jenkins plugin data.
   shell: curl -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > /{{jenkins_home}}/updates/default.json
     creates=/{{jenkins_home}}/updates/default.json
+  environment: proxy_env
 
 - file: path={{jenkins_home}}/updates/default.json owner={{jenkins_user}} group={{jenkins_group}} mode=0755
 
 - name: jenkins-plugins | Install Jenkins plugins.
-  command: java -jar {{jenkins_home}}/jenkins-cli.jar {{jenkins_cli_extra_opts}} -s {{jenkins_url}}{{jenkins_prefix}} install-plugin {{item}} creates={{jenkins_home}}/plugins/{{item}}.jpi
+  command: >
+    java {{jenkins_java_proxy_args | join(' ')}} -jar {{jenkins_home}}/jenkins-cli.jar {{jenkins_cli_extra_opts}}
+    -s {{jenkins_url}}{{jenkins_prefix}} install-plugin {{item}}
+    creates={{jenkins_home}}/plugins/{{item}}.jpi
   sudo_user: "{{ jenkins_user }}"
   with_items: jenkins_plugins
   ignore_errors: yes
