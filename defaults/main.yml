@@ -84,3 +84,5 @@ docker_volume_directory                  : "{{ jenkins_home }}"
 docker_working_directory                 : "/home/vagrant"
 docker_image_name                        : "nabla/ansible-jenkins-master"
 
+proxy_env: []
+
